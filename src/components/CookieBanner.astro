@@ -1,0 +1,157 @@
+---
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" aria-live="polite">
+  <div class="cookie-inner">
+    <div class="cookie-text">
+      <p class="cookie-title">🍪 Usamos cookies</p>
+      <p class="cookie-desc">
+        Utilizamos cookies propias y de terceros para mejorar tu experiencia, analizar el tráfico y personalizar el contenido.
+        Puedes aceptar todas o gestionar tus preferencias.
+        <a href="/cookies" class="cookie-link">Política de cookies</a>
+      </p>
+    </div>
+    <div class="cookie-actions">
+      <button id="cookie-reject" class="cookie-btn cookie-btn--outline">Solo esenciales</button>
+      <button id="cookie-settings" class="cookie-btn cookie-btn--outline">Preferencias</button>
+      <button id="cookie-accept" class="cookie-btn cookie-btn--solid">Aceptar todas</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.cookie-banner {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  z-index: 9998;
+  width: min(92vw, 860px);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+  padding: 1.25rem 1.5rem;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cookie-banner.visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+.cookie-inner {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.cookie-text { flex: 1; min-width: 200px; }
+
+.cookie-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+
+.cookie-desc {
+  font-size: 0.78rem;
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+.cookie-link {
+  color: #6d56e8;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.cookie-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.cookie-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.cookie-btn--outline {
+  background: transparent;
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text);
+}
+.cookie-btn--outline:hover {
+  border-color: var(--color-text);
+}
+
+.cookie-btn--solid {
+  background: var(--color-text);
+  border: 1.5px solid var(--color-text);
+  color: #fff;
+}
+.cookie-btn--solid:hover { opacity: 0.82; }
+
+@media (max-width: 600px) {
+  .cookie-inner { flex-direction: column; gap: 1rem; }
+  .cookie-actions { width: 100%; justify-content: flex-end; }
+}
+</style>
+
+<script>
+  const COOKIE_KEY = 'medclinic_cookies';
+  const banner     = document.getElementById('cookie-banner') as HTMLElement;
+  const btnAccept  = document.getElementById('cookie-accept')   as HTMLButtonElement;
+  const btnReject  = document.getElementById('cookie-reject')   as HTMLButtonElement;
+  const btnSettings= document.getElementById('cookie-settings') as HTMLButtonElement;
+
+  function hideBanner() {
+    banner.classList.remove('visible');
+  }
+
+  function setCookie(value: string) {
+    const expires = new Date();
+    expires.setFullYear(expires.getFullYear() + 1);
+    document.cookie = `${COOKIE_KEY}=${value}; expires=${expires.toUTCString()}; path=/; SameSite=Lax`;
+  }
+
+  function getCookie(): string | null {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_KEY}=([^;]*)`));
+    return match ? decodeURIComponent(match[1]) : null;
+  }
+
+  // Mostrar solo si el usuario no ha decidido todavía
+  if (!getCookie()) {
+    // Pequeño retraso para no competir con el loader del hero
+    setTimeout(() => banner.classList.add('visible'), 2000);
+  }
+
+  btnAccept.addEventListener('click', () => {
+    setCookie('all');
+    hideBanner();
+    // TODO: activar GA4, Meta Pixel, etc.
+  });
+
+  btnReject.addEventListener('click', () => {
+    setCookie('essential');
+    hideBanner();
+  });
+
+  btnSettings.addEventListener('click', () => {
+    // TODO: abrir modal de preferencias detalladas
+    alert('Próximamente: panel de preferencias de cookies.');
+  });
+</script>

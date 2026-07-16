@@ -1,0 +1,280 @@
+---
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<!--
+  ═══════════════════════════════════════════════════════════
+  FORMULARIO DE CONTACTO — INTEGRACIÓN
+  ═══════════════════════════════════════════════════════════
+
+  Por defecto usa Web3Forms (sin backend, gratuito hasta 250 envíos/mes).
+  Pasos:
+    1. Regístrate en https://web3forms.com
+    2. Obtén tu Access Key
+    3. Sustituye "TU_ACCESS_KEY_AQUI" por tu clave real
+
+  OTRAS OPCIONES (ver README para instrucciones detalladas):
+  ─ Formspree:   cambia action a "https://formspree.io/f/TU_ID"
+  ─ Netlify:     añade atributo `netlify` al <form> y elimina el fetch de JS
+  ─ API propia:  modifica el fetch en el <script> para apuntar a tu endpoint
+  ─ EmailJS:     carga su SDK y llama emailjs.sendForm() en el submit handler
+  ═══════════════════════════════════════════════════════════
+-->
+
+<section id="contact">
+  <div class="container">
+
+    <!-- Título + tarjeta info -->
+    <div class="contact-top">
+      <h2 class="contact-heading">CONTÁCTANOS</h2>
+
+      <div class="contact-info-card">
+        <p class="contact-info-label">LABORATORIO MEDCLINIC</p>
+        <p class="contact-info-line">(+34) 91 000 0000</p>
+        <p class="contact-info-line">info@medclinic.es</p>
+        <p class="contact-info-line">123 HEALTH AVENUE, MADRID</p>
+      </div>
+    </div>
+
+    <!-- ── FORMULARIO ──────────────────────────────────────── -->
+    <form
+      id="contactForm"
+      action="https://api.web3forms.com/submit"
+      method="POST"
+      class="contact-form"
+      novalidate
+    >
+      <!-- Web3Forms: sustituye el valor por tu Access Key -->
+      <input type="hidden" name="access_key" value="TU_ACCESS_KEY_AQUI" />
+      <input type="hidden" name="redirect"   value="false" />
+      <!-- Honeypot anti-spam (no quitar) -->
+      <input type="checkbox" name="botcheck" style="display:none;" />
+
+      <!-- Fila 1: campos + botón -->
+      <div class="contact-fields">
+        <input
+          class="form-field"
+          type="text"
+          name="name"
+          placeholder="Nombre"
+          autocomplete="name"
+          required
+        />
+        <input
+          class="form-field"
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          autocomplete="email"
+          required
+        />
+        <input
+          class="form-field"
+          type="text"
+          name="subject"
+          placeholder="Asunto"
+        />
+      </div>
+
+      <!-- Fila 2: textarea + botón -->
+      <div class="contact-bottom">
+        <textarea
+          class="form-field"
+          name="message"
+          placeholder="Mensaje"
+          rows="4"
+          required
+        ></textarea>
+
+        <button type="submit" class="contact-send-btn" id="sendBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="m22 2-7 20-4-9-9-4 20-7Z"/>
+            <path d="m22 2-11 11"/>
+          </svg>
+          <span>Enviar</span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Feedback -->
+    <div id="formSuccess" class="contact-feedback contact-feedback--ok" style="display:none;">
+      ✓ ¡Mensaje enviado! Nos pondremos en contacto pronto.
+    </div>
+    <div id="formError" class="contact-feedback contact-feedback--err" style="display:none;">
+      ✗ Algo falló. Inténtalo de nuevo o escríbenos directamente.
+    </div>
+
+  </div>
+</section>
+
+<style>
+/* ── Cabecera ────────────────────────────────────────────── */
+.contact-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+.contact-heading {
+  font-size: clamp(3rem, 9vw, 7.5rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+}
+.contact-info-card {
+  background: linear-gradient(135deg, var(--color-grad-start), var(--color-grad-end));
+  border-radius: 1.25rem;
+  padding: 1.75rem 2rem;
+  color: #fff;
+  min-width: 240px;
+  flex-shrink: 0;
+}
+.contact-info-label {
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.07em;
+  margin-bottom: 1rem;
+}
+.contact-info-line {
+  font-size: 0.88rem;
+  opacity: 0.92;
+  margin-bottom: 0.3rem;
+}
+
+/* ── Formulario ──────────────────────────────────────────── */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Fila de campos */
+.contact-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Fila textarea + botón */
+.contact-bottom {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.form-field {
+  background: var(--color-surface);
+  border: none;
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--color-text);
+  width: 100%;
+  outline: none;
+  transition: box-shadow 0.2s;
+}
+.form-field::placeholder { color: var(--color-muted); }
+.form-field:focus { box-shadow: 0 0 0 2px var(--color-accent); }
+
+textarea.form-field { resize: vertical; min-height: 120px; }
+
+/* Botón enviar — ancho coherente, mismo alto que el textarea */
+.contact-send-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-width: 130px;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-grad-start), var(--color-grad-end));
+  color: #fff;
+  border: none;
+  border-radius: 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  flex-shrink: 0;
+}
+.contact-send-btn:hover   { opacity: 0.88; }
+.contact-send-btn:active  { transform: scale(0.97); }
+.contact-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Feedback messages */
+.contact-feedback {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.contact-feedback--ok  {
+  background: rgba(139,124,246,0.1);
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+}
+.contact-feedback--err {
+  background: rgba(239,68,68,0.08);
+  border: 1px solid #ef4444;
+  color: #dc2626;
+}
+
+/* ── Mobile ──────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contact-top      { flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  .contact-fields   { grid-template-columns: 1fr; }
+  .contact-bottom   { grid-template-columns: 1fr; }
+  .contact-send-btn { flex-direction: row; min-width: auto; width: 100%; justify-content: center; }
+}
+</style>
+
+<script>
+  const form    = document.getElementById('contactForm')  as HTMLFormElement;
+  const sendBtn = document.getElementById('sendBtn')      as HTMLButtonElement;
+  const success = document.getElementById('formSuccess')  as HTMLElement;
+  const error   = document.getElementById('formError')    as HTMLElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Estado cargando
+    sendBtn.disabled = true;
+    sendBtn.querySelector('span')!.textContent = 'Enviando…';
+
+    try {
+      const data = new FormData(form);
+      const res  = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (res.ok) {
+        form.reset();
+        success.style.display = 'block';
+        error.style.display   = 'none';
+        setTimeout(() => success.style.display = 'none', 6000);
+      } else {
+        throw new Error('Error en el servidor');
+      }
+    } catch {
+      error.style.display   = 'block';
+      success.style.display = 'none';
+      setTimeout(() => error.style.display = 'none', 6000);
+    } finally {
+      sendBtn.disabled = false;
+      sendBtn.querySelector('span')!.textContent = 'Enviar';
+    }
+  });
+</script>

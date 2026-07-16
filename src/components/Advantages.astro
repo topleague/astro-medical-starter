@@ -1,0 +1,176 @@
+---
+const advantages = [
+  {
+    title: 'Soluciones de salud personalizadas',
+    num: '01',
+    icon: 'person',
+    description: 'Planes diagnósticos a medida diseñados en torno a tu perfil genético único y tus objetivos de salud.',
+  },
+  {
+    title: 'Precisión y exactitud',
+    num: '02',
+    icon: 'hub',
+    description: 'Resultados certificados por laboratorio con precisión líder en el sector. Cada lectura, verificada.',
+  },
+  {
+    title: 'Innovación científica',
+    num: '03',
+    icon: 'science',
+    description: 'En la frontera de la investigación genómica y molecular, transformando la ciencia en cuidado real.',
+  },
+];
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<section id="advantages" class="adv-section">
+  <div class="container">
+    <div class="adv-header">
+      <p class="adv-eyebrow" style="color:#6b6b7a;">Tu salud, nuestra especialidad</p>
+      <h2 class="adv-title">Nuestras ventajas</h2>
+    </div>
+
+    <div class="adv-grid">
+      {advantages.map(a => (
+        <div class="adv-card">
+          <!-- Top row: pill + arrow -->
+          <div class="adv-top">
+            <span class="adv-pill">Ventajas</span>
+            <span class="adv-arrow">↗</span>
+          </div>
+
+          <!-- Title -->
+          <h3 class="adv-card-title">{a.title}</h3>
+
+          <!-- Bottom row: explore pill + big number -->
+          <div class="adv-bottom">
+            <div class="adv-explore">
+              <span class="adv-explore-label">explorar</span>
+              <span class="adv-explore-icon">{a.icon === 'person' ? '👤' : a.icon === 'hub' ? '✦' : '🔬'}</span>
+            </div>
+            <span class="adv-num" aria-hidden="true">{a.num}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.adv-section {
+  background: var(--color-surface);
+  border-radius: 1.5rem;
+  margin-inline: 1.5rem;
+  padding-block: var(--section-py);
+}
+.adv-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 2.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.adv-eyebrow {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+}
+.adv-title {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.adv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+}
+
+.adv-card {
+  background: #fff;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 280px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+.adv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(139,124,246,0.10);
+}
+
+.adv-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+.adv-pill {
+  display: inline-flex;
+  padding: 0.3rem 0.85rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.adv-arrow {
+  font-size: 1.6rem;
+  color: var(--color-accent);
+  line-height: 1;
+}
+
+.adv-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  max-width: 18ch;
+  flex: 1; /* empuja el bottom hacia abajo */
+}
+
+.adv-bottom {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+.adv-explore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.8rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+.adv-explore-icon {
+  font-size: 0.85rem;
+}
+
+/* Número grande recortado por la tarjeta — aria-hidden, solo decorativo */
+.adv-num {
+  font-size: clamp(4.5rem, 8vw, 6.5rem);
+  font-weight: 800;
+  color: transparent;
+  -webkit-text-stroke: 1.5px #c8c8d0;
+  /* aria-hidden=true — invisible al accessibility tree */
+  line-height: 0.85;
+  letter-spacing: -0.05em;
+  margin-bottom: -0.6rem;
+  margin-right: -0.25rem;
+}
+
+@media (max-width: 768px) {
+  .adv-grid { grid-template-columns: 1fr; }
+  .adv-section { margin-inline: 0.75rem; }
+}
+</style>

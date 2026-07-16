@@ -1,0 +1,93 @@
+---
+const webinars = [
+  {
+    title: 'Introducción a la salud genética',
+    desc: 'Una visión general de los fundamentos de la genética y cómo los genes influyen en la salud.',
+    image: '',
+    href: '#',
+  },
+  {
+    title: 'Genética del cáncer y evaluación del riesgo',
+    desc: 'Exploración de los factores genéticos que contribuyen a los distintos tipos de cáncer.',
+    image: '',
+    href: '#',
+  },
+  {
+    title: 'Pruebas genéticas en planificación familiar',
+    desc: 'El papel de las pruebas genéticas antes y durante el embarazo.',
+    image: '',
+    href: '#',
+  },
+];
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<section id="knowledge">
+  <!-- Banner with image -->
+  <div class="container" style="margin-bottom:3rem;">
+    <div class="hero-banner" style="min-height:360px;">
+      <!-- Replace with your banner image -->
+      <div style="position:absolute;inset:0;background:linear-gradient(120deg,#dbeafe,#ede9fe);border-radius:var(--radius-card);"></div>
+
+      <!-- Floating glass cards -->
+      <div style="position:absolute;top:1.5rem;right:1.5rem;display:flex;gap:0.75rem;">
+        <button class="btn-outline" style="background:rgba(255,255,255,0.9);">Descargar app</button>
+        <a href="#contact" class="btn-outline" style="background:rgba(255,255,255,0.9);">Pedir cita</a>
+      </div>
+
+      <div class="glass-card" style="max-width:280px;">
+        <p style="font-size:0.7rem;color:var(--color-muted);margin-bottom:0.25rem;">Frecuencia cardíaca</p>
+        <p style="font-weight:700;margin-bottom:0.25rem;">Frecuencia media</p>
+        <p style="font-size:0.75rem;color:var(--color-muted);margin-bottom:0.75rem;">La causa de las palpitaciones cardíacas es la taquicardia hereditaria.</p>
+        <!-- Mini ECG line -->
+        <svg width="100%" height="36" viewBox="0 0 160 36" fill="none" stroke="var(--color-accent)" stroke-width="1.5">
+          <polyline points="0,18 30,18 45,8 52,28 60,8 70,28 80,18 160,18" />
+        </svg>
+        <p style="font-size:1.75rem;font-weight:800;margin-top:0.5rem;">90 <span style="font-size:0.9rem;font-weight:400;color:var(--color-muted);">bpm</span></p>
+      </div>
+
+      <div class="banner-overlay" style="margin-left:auto;text-align:right;">
+        <h2 style="font-size:clamp(1.5rem,3vw,2rem);font-weight:700;color:var(--color-text);">Tu fuente de<br/>conocimiento y recursos</h2>
+        <div style="display:flex;gap:0.75rem;margin-top:1rem;justify-content:flex-end;">
+          <button class="btn-outline">Chequeo corporal completo</button>
+          <button class="btn-outline">Protege tu salud</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Webinars list -->
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:start;">
+      <div>
+        <h2 style="font-size:clamp(1.75rem,3vw,2.5rem);font-weight:700;line-height:1.2;max-width:28ch;">
+          Nuestros <span style="color:var(--color-accent);">webinars educativos</span> son un recurso invaluable para quienes desean profundizar en estos temas.
+        </h2>
+      </div>
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <span style="font-size:1.25rem;">🎓</span>
+            <span style="font-size:0.875rem;font-weight:600;">Webinars educativos</span>
+          </div>
+          <a href="#" class="btn-accent" style="padding:0.5rem 1.25rem;font-size:0.8rem;">Ver todos</a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+          {webinars.map(w => (
+            <a href={w.href} style="text-decoration:none;color:inherit;">
+              <div style="position:relative;margin-bottom:0.75rem;">
+                <div style="height:80px;background:var(--color-surface);border-radius:1rem;display:flex;align-items:center;justify-content:center;color:var(--color-muted);font-size:0.7rem;text-align:center;">
+                  120×80px
+                </div>
+                <span style="position:absolute;top:-0.4rem;right:-0.4rem;width:1.5rem;height:1.5rem;background:var(--color-accent);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;">↗</span>
+              </div>
+              <h4 style="font-size:0.875rem;font-weight:700;margin-bottom:0.35rem;">{w.title}</h4>
+              <p style="font-size:0.75rem;color:var(--color-muted);line-height:1.5;">{w.desc}</p>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

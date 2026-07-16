@@ -1,0 +1,22 @@
+---
+interface Props {
+  items: string[];
+  accent?: boolean;
+}
+const { items, accent = false } = Astro.props;
+// Duplicate for seamless loop
+const doubled = [...items, ...items];
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<div class="marquee-wrapper">
+  <div class="marquee-track">
+    {doubled.map((item, i) => (
+      <span class={`marquee-item${accent && i % 2 === 1 ? ' marquee-item--accent' : ''}`}>
+        {item}
+        <span class="marquee-sep">+</span>
+      </span>
+    ))}
+  </div>
+</div>

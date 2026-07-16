@@ -1,0 +1,200 @@
+---
+import Marquee from './Marquee.astro';
+const marqueeItems = ['Potenciando tu salud', 'Medicina de precisión', 'Innovación genómica', 'Potenciando tu salud', 'Medicina de precisión', 'Innovación genómica'];
+const milestones = [
+  {
+    year: '2009', title: 'Fundación',
+    desc: 'MedClinic se establece como laboratorio de investigación clínica, obteniendo la acreditación IAM en el primer año.',
+    img: 'https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?w=560&q=80',
+  },
+  {
+    year: '2012', title: 'Certificación CLIA',
+    desc: 'Obtención de la certificación CLIA, ampliando nuestras capacidades diagnósticas.',
+    img: 'https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=560&q=80',
+  },
+  {
+    year: '2017', title: 'Diagnósticos de Precisión',
+    desc: 'Reconocidos por nuestra precisión, estableciendo nuevos estándares del sector en exactitud de pruebas genéticas.',
+    img: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=560&q=80',
+  },
+  {
+    year: '2018', title: 'Integración de IA',
+    desc: 'Pioneros en la integración del análisis con inteligencia artificial en nuestros flujos de trabajo diagnósticos.',
+    img: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=560&q=80',
+  },
+  {
+    year: '2019', title: 'Expansión global',
+    desc: 'Expansión de operaciones a Europa, inaugurando unas instalaciones de laboratorio de última generación.',
+    img: 'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=560&q=80',
+  },
+  {
+    year: '2020', title: 'Respuesta a la pandemia',
+    desc: 'Ampliación rápida de capacidades de análisis para apoyar los esfuerzos globales de vigilancia genómica.',
+    img: 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=560&q=80',
+  },
+  {
+    year: '2023', title: 'Medicina personalizada',
+    desc: 'Lanzamiento de nuestro programa estrella de medicina personalizada, con más de 25.000 pacientes en todo el mundo.',
+    img: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=560&q=80',
+  },
+];
+
+const ACTIVE = 4; // 2019 activo por defecto (índice 4)
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<section id="history">
+  <!-- Marquee — mismo componente que el del hero -->
+  <div style="margin-bottom:3rem;">
+    <Marquee items={marqueeItems} accent />
+  </div>
+
+  <div class="container">
+    <div class="history-grid">
+
+      <!-- Col izquierda: label + avatar -->
+      <div class="history-left">
+        <p class="text-eyebrow">Nuestra historia</p>
+        <div class="history-question">
+          <img
+            src="https://images.unsplash.com/photo-1651008376811-b90baee60c1f?w=80&h=80&fit=crop&q=80"
+            alt="Especialista"
+            class="history-avatar"
+          />
+          <span>¿Tienes alguna pregunta?</span>
+        </div>
+        <a href="#contact" class="btn-outline" style="display:inline-flex;margin-top:0.75rem;">Contáctanos</a>
+      </div>
+
+      <!-- Col central: años -->
+      <div class="history-years" id="historyYears">
+        {milestones.map((m, i) => (
+          <button
+            class={`year-btn${i === ACTIVE ? ' active' : ''}`}
+            data-index={i}
+            aria-label={`Ver hito ${m.year}`}
+          >
+            <span class="year-label">{m.year}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Col derecha: imagen + descripción -->
+      <div class="history-content" id="historyContent">
+        {milestones.map((m, i) => (
+          <div class={`history-panel${i === ACTIVE ? ' active' : ''}`}>
+            <p class="history-desc">{m.desc}</p>
+            <div class="history-img-wrap">
+              <img src={m.img} alt={m.title} class="history-img" loading="lazy" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<style>
+.history-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+/* Col izquierda */
+.history-left { padding-top: 0.5rem; }
+
+.history-question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 3rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+.history-avatar {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--color-accent);
+}
+
+/* Col años */
+.history-years {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  align-items: flex-end;
+  padding-top: 0.25rem;
+}
+.year-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  text-align: right;
+  transition: transform 0.2s;
+}
+.year-label {
+  font-size: 1rem;
+  font-weight: 400;
+  color: #6b6b7a;
+  transition: font-size 0.3s cubic-bezier(0.16,1,0.3,1),
+              font-weight 0.3s ease,
+              color 0.3s ease;
+  display: block;
+}
+.year-btn.active .year-label {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+/* Col contenido */
+.history-panel { display: none; }
+.history-panel.active { display: block; }
+
+.history-desc {
+  font-size: 0.85rem;
+  color: #6b6b7a;
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
+  max-width: 40ch;
+}
+
+.history-img-wrap {
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+.history-img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+.history-img:hover { transform: scale(1.03); }
+
+@media (max-width: 768px) {
+  .history-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .history-years { align-items: flex-start; }
+}
+</style>
+
+<script>
+  const yearBtns = document.querySelectorAll('.year-btn');
+  const panels   = document.querySelectorAll('.history-panel');
+
+  yearBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      yearBtns.forEach(b => b.classList.remove('active'));
+      panels.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      panels[i].classList.add('active');
+    });
+  });
+</script>

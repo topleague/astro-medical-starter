@@ -1,0 +1,304 @@
+---
+
+/**
+ * ═══════════════════════════════════════════════════════════
+ * SERVICIOS — MODO ESTÁTICO vs WORDPRESS HEADLESS
+ * ═══════════════════════════════════════════════════════════
+ *
+ * Por defecto funciona con datos estáticos (placeholders).
+ * Para conectar WordPress headless:
+ *
+ *  1. En WordPress: crea un CPT llamado "servicio" (o usa Posts)
+ *     con los campos ACF: titulo, descripcion, imagen (field type: image)
+ *
+ *  2. Activa la REST API (viene activa por defecto en WP)
+ *
+ *  3. Cambia la variable WP_MODE a true y rellena WP_API_URL
+ *     con la URL de tu CMS headless.
+ *
+ *  4. (Opcional) Filtra por categoría añadiendo ?categories=ID
+ *     o usa un CPT: /wp-json/wp/v2/servicio
+ *
+ *  EJEMPLO URL:
+ *    https://cms.tudominio.com/wp-json/wp/v2/servicio?per_page=6&_embed
+ *
+ *  CAMPOS que lee el componente desde la API:
+ *    - title.rendered       → título del servicio
+ *    - excerpt.rendered     → descripción corta
+ *    - _embedded['wp:featuredmedia'][0].source_url → imagen
+ *    - link                 → URL de la entrada (para el enlace "Servicios")
+ * ═══════════════════════════════════════════════════════════
+ */
+
+// ── CONFIGURACIÓN ─────────────────────────────────────────
+const WP_MODE   = false;                               // ← cambia a true para WordPress
+const WP_API_URL = 'https://cms.tudominio.com/wp-json/wp/v2/servicio?per_page=6&_embed';
+
+// ── DATOS ESTÁTICOS (placeholders) ───────────────────────
+const staticServices = [
+  {
+    title: 'Evaluaciones de Salud Genética',
+    description: 'Análisis exhaustivo de tu perfil genético para identificar predisposiciones de salud y estrategias de prevención personalizadas.',
+    image: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=640&h=480&fit=crop&q=80',
+    link: '#services',
+  },
+  {
+    title: 'Pruebas Genéticas en Oncología',
+    description: 'Pruebas genéticas especializadas para la detección temprana del cáncer, estratificación del riesgo y planificación de terapias dirigidas.',
+    image: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=640&h=480&fit=crop&q=80',
+    link: '#services',
+  },
+  {
+    title: 'Asesoramiento Genético',
+    description: 'Consulta especializada para interpretar tus resultados genéticos y orientar decisiones de salud informadas.',
+    image: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=640&h=480&fit=crop&q=80',
+    link: '#services',
+  },
+  {
+    title: 'Diagnósticos de Precisión',
+    description: 'Diagnósticos moleculares avanzados con precisión de laboratorio certificada y resultados rápidos.',
+    image: 'https://images.unsplash.com/photo-1582719471384-894fbb16e074?w=640&h=480&fit=crop&q=80',
+    link: '#services',
+  },
+];
+
+// ── FETCH WORDPRESS (solo si WP_MODE = true) ─────────────
+type Service = { title: string; description: string; image: string; link: string; };
+
+let services: Service[] = staticServices;
+
+if (WP_MODE) {
+  try {
+    const res  = await fetch(WP_API_URL);
+    if (!res.ok) throw new Error(`API error ${res.status}`);
+    const data = await res.json();
+
+    services = data.map((post: any): Service => ({
+      title:       post.title?.rendered ?? '',
+      description: post.excerpt?.rendered?.replace(/<[^>]+>/g, '') ?? '',
+      image:       post._embedded?.['wp:featuredmedia']?.[0]?.source_url ?? '',
+      link:        post.link ?? '#',
+    }));
+  } catch (e) {
+    console.warn('[Services] Error fetching WordPress API — usando placeholders.', e);
+    services = staticServices;   // fallback silencioso
+  }
+}
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+
+<!-- Schema: ItemList de servicios médicos -->
+<script type="application/ld+json" set:html={JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Servicios médicos',
+  itemListElement: services.map((s, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': 'MedicalProcedure',
+      name: s.title,
+      description: s.description,
+      image: s.image || undefined,
+    }
+  }))
+})} />
+
+<section id="services">
+  <div class="container" style="margin-bottom:3rem;">
+    <div class="services-header">
+      <h2 class="display-md" style="max-width:16ch;">La ciencia detrás de nuestros servicios</h2>
+      <div class="services-header-right">
+        <p style="font-size:1rem;line-height:1.6;">
+          Pioneros en <span class="text-fade">innovación sanitaria</span>, aprovechamos
+          tecnologías de vanguardia, desde la secuenciación genómica hasta el análisis con IA.
+        </p>
+        <a href="#contact" class="btn-outline" style="align-self:flex-end;">Pedir cita</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Carrusel -->
+  <div class="services-scroll-wrap">
+    <div class="services-track" id="servicesTrack">
+      {services.map((s, i) => (
+        <div class="service-card">
+          <div class="service-img">
+            {s.image
+              ? <img src={s.image} alt={s.title} loading="lazy" />
+              : <div class="service-img-placeholder">Imagen servicio {i + 1}<br/>320×280px</div>
+            }
+            <span class="service-icon-badge">✦</span>
+          </div>
+          <div class="service-card-footer">
+            <h3 class="service-title">{s.title}</h3>
+            <a href={s.link} class="pill">Servicios</a>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Dots -->
+    <div class="service-dots" id="serviceDots">
+      {services.map((_, i) => (
+        <button
+          class={`dot-btn${i === 0 ? ' active' : ''}`}
+          data-index={i}
+          aria-label={`Ir al servicio ${i + 1}`}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+.services-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.services-header-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  max-width: 38ch;
+  text-align: right;
+}
+
+/* Scroll wrap con padding de contenedor */
+.services-scroll-wrap {
+  padding-inline: max(1.5rem, calc((100% - min(90rem, 100% - 3rem)) / 2));
+}
+
+.services-track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 0.5rem;
+}
+.services-track::-webkit-scrollbar { display: none; }
+
+.service-card {
+  flex: 0 0 320px;
+  scroll-snap-align: start;
+}
+
+.service-img {
+  position: relative;
+  height: 280px;
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.service-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.service-card:hover .service-img img { transform: scale(1.04); }
+
+.service-img-placeholder {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.service-icon-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+.service-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  gap: 0.75rem;
+}
+.service-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+  max-width: 20ch;
+}
+
+/* Dots */
+.service-dots {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.dot-btn {
+  /* Área táctil mínima 44×44px (WCAG 2.5.5) */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Punto visual dentro del botón */
+.dot-btn::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: background 0.2s, transform 0.2s;
+  flex-shrink: 0;
+}
+.dot-btn.active::before {
+  background: var(--color-accent);
+  transform: scale(1.4);
+}
+</style>
+
+<script>
+  const track = document.getElementById('servicesTrack') as HTMLElement;
+  const dots  = document.querySelectorAll('.dot-btn');
+
+  // Dots → scroll
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      const card = track.children[i] as HTMLElement;
+      track.scrollTo({ left: card.offsetLeft - 24, behavior: 'smooth' });
+      dots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+
+  // Scroll → dots
+  track.addEventListener('scroll', () => {
+    const cardW = (track.children[0] as HTMLElement)?.offsetWidth + 20 || 340;
+    const idx   = Math.round(track.scrollLeft / cardW);
+    dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+  }, { passive: true });
+</script>

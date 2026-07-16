@@ -1,0 +1,222 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  // Schema.org — personaliza estos valores en cada página
+  schemaName?: string;
+  schemaPhone?: string;
+  schemaEmail?: string;
+  schemaAddress?: string;
+  schemaCity?: string;
+  schemaPostalCode?: string;
+  schemaCountry?: string;
+  schemaUrl?: string;
+}
+
+const {
+  title = 'MedClinic — Diagnóstico Médico Avanzado',
+  description = 'Diagnósticos de salud de precisión y atención personalizada. Análisis genéticos, investigación oncológica y diagnóstico corporal completo.',
+  ogImage = '/og-default.jpg',
+  // ── Rellena estos valores con los datos reales de la clínica ──
+  schemaName    = 'MedClinic Laboratorio',
+  schemaPhone   = '+34 91 000 0000',
+  schemaEmail   = 'info@medclinic.es',
+  schemaAddress = '123 Health Avenue',
+  schemaCity    = 'Madrid',
+  schemaPostalCode = '28001',
+  schemaCountry = 'ES',
+  schemaUrl     = 'https://tudominio.es',
+} = Astro.props;
+
+// Schema JSON-LD
+const schemaMedicalClinic = {
+  '@context': 'https://schema.org',
+  '@type': 'MedicalClinic',
+  name: schemaName,
+  url: schemaUrl,
+  telephone: schemaPhone,
+  email: schemaEmail,
+  description: description,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: schemaAddress,
+    addressLocality: schemaCity,
+    postalCode: schemaPostalCode,
+    addressCountry: schemaCountry,
+  },
+  // Añade aquí las especialidades médicas reales
+  medicalSpecialty: [
+    'Genetics',
+    'Oncology',
+    'DiagnosticImaging',
+  ],
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+      opens: '09:00',
+      closes: '18:00',
+    },
+  ],
+  // Imagen OG como imagen de la organización
+  image: `${schemaUrl}${ogImage}`,
+  sameAs: [
+    // Añade tus perfiles sociales
+    // 'https://www.linkedin.com/company/...',
+    // 'https://www.instagram.com/...',
+  ],
+};
+
+const schemaWebsite = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: schemaName,
+  url: schemaUrl,
+  // Sitelinks searchbox (aparece en Google si tienes buscador interno)
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${schemaUrl}/?s={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
+};
+
+const schemaBreadcrumb = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    {
+      '@type': 'ListItem',
+      position: 1,
+      name: 'Inicio',
+      item: schemaUrl,
+    },
+  ],
+};
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://example.com');
+---
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
+
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Preload fonts first — antes de CSS y scripts -->
+    <link rel="preload" href="/fonts/dm-sans-800.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/dm-sans-700.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/dm-sans-500.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/dm-sans-400.woff2" as="font" type="font/woff2" crossorigin />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph ──────────────────────────────────────── -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={`${schemaUrl}${ogImage}`} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content={schemaName} />
+
+    <!-- Twitter Card ────────────────────────────────────── -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={`${schemaUrl}${ogImage}`} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: DM Sans local — sin dependencias externas, sin render blocking -->
+    <style>
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-300.woff2') format('woff2');
+        font-weight: 300;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-400.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-500.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-600.woff2') format('woff2');
+        font-weight: 600;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-700.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+        size-adjust: 100%;
+        ascent-override: 95%;
+        descent-override: 25%;
+        line-gap-override: 0%;
+      }
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('/fonts/dm-sans-800.woff2') format('woff2');
+        font-weight: 800;
+        font-style: normal;
+        font-display: swap;
+        /* Ajustes métricos: el fallback system-ui ocupa el mismo espacio que DM Sans */
+        /* → reflow imperceptible, LCP se pinta inmediatamente */
+        size-adjust: 100%;
+        ascent-override: 95%;
+        descent-override: 25%;
+        line-gap-override: 0%;
+      }
+    </style>
+
+
+    <!-- Template: Astro Medical Starter by Cris Culebras · Daruma Producciones (https://darumaproducciones.es) -->
+    <meta name="generator" content="Astro Medical Starter · Cris Culebras · darumaproducciones.es" />
+
+    <!-- Critical CSS inline: evita FOUC y reduce render-blocking -->
+    <style>
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+      html{-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+      body{font-family:system-ui,-apple-system,sans-serif;background:#fff;color:#0a0a0a;overflow-x:hidden}
+      .nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.25rem 2rem;background:rgba(255,255,255,0.9);backdrop-filter:blur(12px)}
+      .nav-logo{font-size:1.1rem;font-weight:800;color:#0a0a0a;text-decoration:none}
+      .hero-section{position:relative;min-height:100svh;display:flex;flex-direction:column;overflow:hidden;padding-top:5rem}
+      .hero-h1{font-size:clamp(2.4rem,4.5vw,3.6rem);font-weight:600;line-height:1.08;letter-spacing:-0.025em;color:#0a0a0a;margin-bottom:2rem;max-width:13ch}
+      .hero-eyebrow{font-size:0.7rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#0a0a0a;margin-bottom:1.25rem}
+    </style>
+    <title>{title}</title>
+
+    <!-- Schema.org JSON-LD ─────────────────────────────── -->
+    <script type="application/ld+json" set:html={JSON.stringify(schemaMedicalClinic)} />
+    <script type="application/ld+json" set:html={JSON.stringify(schemaWebsite)} />
+    <script type="application/ld+json" set:html={JSON.stringify(schemaBreadcrumb)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
