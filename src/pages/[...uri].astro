@@ -40,7 +40,20 @@ const { post } = Astro.props;
           set:html={post.excerpt}
         />
       </header>
-
+{post.featuredImage?.node && (
+  <img
+    class="post-featured-image"
+    src={post.featuredImage.node.sourceUrl}
+    alt={post.featuredImage.node.altText || post.title}
+  />
+)}
+.post-featured-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 48px;
+  border-radius: 12px;
+}
       <div
         class="post-content"
         set:html={post.content}
