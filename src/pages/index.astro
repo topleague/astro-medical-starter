@@ -1,8 +1,6 @@
 ---
 import { getPosts } from '../lib/wordpress.js';
 
-const posts = await getPosts();
----
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav         from '../components/Nav.astro';
 import Hero        from '../components/Hero.astro';
@@ -16,6 +14,8 @@ import Contact     from '../components/Contact.astro';
 import Footer      from '../components/Footer.astro';
 import CookieBanner from '../components/CookieBanner.astro';
 
+const posts = await getPosts();
+
 const marqueeItems = [
   'Salud de precisión',
   'Visión genética',
@@ -24,8 +24,8 @@ const marqueeItems = [
   'Servicios de precisión',
 ];
 ---
-<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
 
+<!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
 
 <BaseLayout
   title="MedClinic — Diagnóstico Médico Avanzado"
@@ -42,4 +42,14 @@ const marqueeItems = [
   <Contact />
   <Footer />
   <CookieBanner />
+
+  <h2>WordPress Posts</h2>
+
+  <ul>
+    {posts.map((post) => (
+      <li>
+        <a href={post.uri}>{post.title}</a>
+      </li>
+    ))}
+  </ul>
 </BaseLayout>
