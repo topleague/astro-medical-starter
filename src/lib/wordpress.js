@@ -37,7 +37,7 @@ export async function getPosts() {
   });
 
   if (!response.ok) {
-    throw new Error(\`WordPress API error: \${response.status}\`);
+    throw new Error(`WordPress API error: ${response.status}`);
   }
 
   const { data } = await response.json();
