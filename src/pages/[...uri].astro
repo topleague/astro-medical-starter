@@ -47,13 +47,6 @@ const { post } = Astro.props;
     alt={post.featuredImage.node.altText || post.title}
   />
 )}
-.post-featured-image {
-  display: block;
-  width: 100%;
-  height: auto;
-  margin: 0 0 48px;
-  border-radius: 12px;
-}
       <div
         class="post-content"
         set:html={post.content}
@@ -166,4 +159,12 @@ const { post } = Astro.props;
       font-size: 1rem;
     }
   }
+
+  .post-featured-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 0 48px;
+  border-radius: 12px;
+}
 </style>
