@@ -23,10 +23,10 @@ const { post } = Astro.props;
   description={post.excerpt}
 >
   <main>
-    <h1>{post.title}</h1>
+  <h1>{post.title}</h1>
 
-    <p>{post.date}</p>
+  <p>{post.date}</p>
 
-    <div set:html={post.excerpt} />
-  </main>
+  <div set:html={post.content} />
+</main>
 </BaseLayout>
