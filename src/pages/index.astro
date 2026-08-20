@@ -1,4 +1,8 @@
 ---
+import { getPosts } from '../lib/wordpress.js';
+
+const posts = await getPosts();
+---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Nav         from '../components/Nav.astro';
 import Hero        from '../components/Hero.astro';
