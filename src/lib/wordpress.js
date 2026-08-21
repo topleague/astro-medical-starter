@@ -46,44 +46,125 @@ export async function getAllPostUris() {
 
 
 /* Get one complete post by its URI */
+/* Replace getPostByURI() with this: */
 
-export async function getPostByURI(uri) {
-  const data = await wpFetch(
-    `
-      query GetPostByURI($uri: String!) {
-        nodeByUri(uri: $uri) {
-          __typename
-
-          ... on Post {
-            id
-            title
-            date
-            uri
-            excerpt
-            content
-
-            featuredImage {
-              node {
-                sourceUrl
-                altText
+export async function getNodeByURI(uri) {
+    const data = await wpFetch(
+      `
+        query GetNodeByURI($uri: String!) {
+          nodeByUri(uri: $uri) {
+            __typename
+  
+            ... on Post {
+              id
+              title
+              date
+              uri
+              excerpt
+              content
+  
+              featuredImage {
+                node {
+                  sourceUrl
+                  altText
+                }
+              }
+  
+              categories {
+                nodes {
+                  name
+                  uri
+                }
               }
             }
-
-            categories {
-              nodes {
-                name
-                uri
+  
+            ... on Page {
+              id
+              title
+              date
+              uri
+              content
+            }
+  
+            ... on Category {
+              id
+              name
+              uri
+  
+              posts(first: 100) {
+                nodes {
+                  id
+                  title
+                  date
+                  uri
+                  excerpt
+                }
+              }
+            }
+  
+            ... on Tag {
+              id
+              name
+              uri
+  
+              posts(first: 100) {
+                nodes {
+                  id
+                  title
+                  date
+                  uri
+                  excerpt
+                }
               }
             }
           }
         }
-      }
-    `,
-    { uri }
-  );
+      `,
+      { uri }
+    );
+  
+    return data.nodeByUri;
+  }
 
-  return data.nodeByUri;
-}
+/* Then add this function underneath it: */
+  export async function getAllContentUris() {
+    const data = await wpFetch(`
+      {
+        posts(first: 100) {
+          nodes {
+            uri
+          }
+        }
+  
+        pages(first: 100) {
+          nodes {
+            uri
+          }
+        }
+  
+        categories(first: 100) {
+          nodes {
+            uri
+          }
+        }
+  
+        tags(first: 100) {
+          nodes {
+            uri
+          }
+        }
+      }
+    `);
+  
+    return [
+      ...data.posts.nodes,
+      ...data.pages.nodes,
+      ...data.categories.nodes,
+      ...data.tags.nodes
+    ]
+      .filter((node) => node.uri)
+      .map((node) => node.uri);
+  }
 
 
 /* Get the latest posts for the homepage */
