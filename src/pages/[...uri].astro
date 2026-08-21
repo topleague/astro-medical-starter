@@ -37,108 +37,226 @@ const isTag = node.__typename === 'Tag';
   description={node.excerpt || ''}
 >
   <main class="post-page">
-    <article class="post">
 
-      {isPost && (
-        <>
-          <header class="post-header">
-            <p class="post-date">
-              {new Date(node.date).toLocaleDateString('en-IN', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
-            </p>
+    <!-- =====================================================
+         SINGLE POST
+         ===================================================== -->
 
-            <h1>{node.title}</h1>
+    {isPost && (
+      <article class="post">
 
-            <div
-              class="post-excerpt"
-              set:html={node.excerpt}
-            />
+        <header class="post-header">
 
-            <div class="post-meta">
+          <p class="post-date">
+            {new Date(node.date).toLocaleDateString('en-IN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+            })}
+          </p>
 
-              {node.categories?.nodes?.length > 0 && (
-                <div class="post-categories">
+          <h1>{node.title}</h1>
+
+          <div
+            class="post-excerpt"
+            set:html={node.excerpt}
+          />
+
+          <div class="post-meta">
+
+            {node.categories?.nodes?.length > 0 && (
+              <div class="post-taxonomy">
+
+                <span class="taxonomy-label">
+                  Category
+                </span>
+
+                <div class="taxonomy-links">
                   {node.categories.nodes.map((category) => (
                     <a href={category.uri}>
                       {category.name}
                     </a>
                   ))}
                 </div>
-              )}
 
-              {node.tags?.nodes?.length > 0 && (
-                <div class="post-tags">
+              </div>
+            )}
+
+            {node.tags?.nodes?.length > 0 && (
+              <div class="post-taxonomy">
+
+                <span class="taxonomy-label">
+                  Tags
+                </span>
+
+                <div class="taxonomy-links">
                   {node.tags.nodes.map((tag) => (
                     <a href={tag.uri}>
                       {tag.name}
                     </a>
                   ))}
                 </div>
+
+              </div>
+            )}
+
+          </div>
+
+        </header>
+
+        {node.featuredImage?.node && (
+          <img
+            class="post-featured-image"
+            src={node.featuredImage.node.sourceUrl}
+            alt={node.featuredImage.node.altText || node.title}
+          />
+        )}
+
+        <div
+          class="post-content"
+          set:html={node.content}
+        />
+
+      </article>
+    )}
+
+
+    <!-- =====================================================
+         PAGE
+         ===================================================== -->
+
+    {isPage && (
+      <article class="post">
+
+        <header class="post-header">
+          <h1>{node.title}</h1>
+        </header>
+
+        <div
+          class="post-content"
+          set:html={node.content}
+        />
+
+      </article>
+    )}
+
+
+    <!-- =====================================================
+         CATEGORY / TAG ARCHIVE
+         ===================================================== -->
+
+    {(isCategory || isTag) && (
+      <section class="archive">
+
+        <header class="archive-header">
+
+          <p class="archive-eyebrow">
+            {isCategory ? 'Category' : 'Tag'}
+          </p>
+
+          <h1>{node.name}</h1>
+
+          <p class="archive-count">
+            {node.posts.nodes.length}
+            {node.posts.nodes.length === 1 ? ' article' : ' articles'}
+          </p>
+
+        </header>
+
+
+        <div class="archive-grid">
+
+          {node.posts.nodes.map((item) => (
+
+            <article class="archive-card">
+
+              {item.featuredImage?.node && (
+                <a
+                  href={item.uri}
+                  class="archive-image-link"
+                >
+                  <img
+                    class="archive-image"
+                    src={item.featuredImage.node.sourceUrl}
+                    alt={
+                      item.featuredImage.node.altText ||
+                      item.title
+                    }
+                    loading="lazy"
+                  />
+                </a>
               )}
 
-            </div>
-          </header>
+              <div class="archive-card-body">
 
-          {node.featuredImage?.node && (
-            <img
-              class="post-featured-image"
-              src={node.featuredImage.node.sourceUrl}
-              alt={node.featuredImage.node.altText || node.title}
-            />
-          )}
+                {item.date && (
+                  <p class="archive-date">
+                    {new Date(item.date).toLocaleDateString(
+                      'en-IN',
+                      {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    )}
+                  </p>
+                )}
 
-          <div
-            class="post-content"
-            set:html={node.content}
-          />
-        </>
-      )}
-
-      {isPage && (
-        <>
-          <header class="post-header">
-            <h1>{node.title}</h1>
-          </header>
-
-          <div
-            class="post-content"
-            set:html={node.content}
-          />
-        </>
-      )}
-
-      {(isCategory || isTag) && (
-        <>
-          <header class="post-header">
-            <h1>{node.name}</h1>
-          </header>
-
-          <div class="post-list">
-            {node.posts.nodes.map((item) => (
-              <article>
-                <h2>
-                  <a href={item.uri}>{item.title}</a>
+                <h2 class="archive-title">
+                  <a href={item.uri}>
+                    {item.title}
+                  </a>
                 </h2>
 
-                <div set:html={item.excerpt} />
-              </article>
-            ))}
-          </div>
-        </>
-      )}
+                {item.excerpt && (
+                  <div
+                    class="archive-excerpt"
+                    set:html={item.excerpt}
+                  />
+                )}
 
-    </article>
+                {item.categories?.nodes?.length > 0 && (
+                  <div class="archive-taxonomy">
+
+                    {item.categories.nodes.map((category) => (
+                      <a href={category.uri}>
+                        {category.name}
+                      </a>
+                    ))}
+
+                  </div>
+                )}
+
+              </div>
+
+            </article>
+
+          ))}
+
+        </div>
+
+      </section>
+    )}
+
   </main>
 </BaseLayout>
 
+
 <style>
+
+  /* =========================================================
+     SHARED PAGE CONTAINER
+     ========================================================= */
+
   .post-page {
     width: 100%;
-    padding: 80px 24px;
+    padding: 120px 24px 80px;
   }
+
+
+  /* =========================================================
+     SINGLE POST
+     ========================================================= */
 
   .post {
     max-width: 820px;
@@ -170,32 +288,69 @@ const isTag = node.__typename === 'Tag';
     opacity: 0.75;
   }
 
+
+  /* =========================================================
+     POST CATEGORY / TAG META
+     ========================================================= */
+
   .post-meta {
-    margin-top: 24px;
-    font-size: 0.9rem;
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
 
-  .post-categories,
-  .post-tags {
+  .post-taxonomy {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .taxonomy-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  .taxonomy-links {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: 8px;
   }
 
-  .post-categories a,
-  .post-tags a {
+  .taxonomy-links a {
     text-decoration: none;
     padding: 5px 10px;
     border: 1px solid currentColor;
     border-radius: 999px;
+    font-size: 0.82rem;
     opacity: 0.7;
   }
 
-  .post-categories a:hover,
-  .post-tags a:hover {
+  .taxonomy-links a:hover {
     opacity: 1;
   }
+
+
+  /* =========================================================
+     FEATURED IMAGE
+     ========================================================= */
+
+  .post-featured-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0 0 48px;
+    border-radius: 12px;
+  }
+
+
+  /* =========================================================
+     POST CONTENT
+     ========================================================= */
 
   .post-content {
     font-size: 1.08rem;
@@ -252,17 +407,169 @@ const isTag = node.__typename === 'Tag';
     margin-bottom: 0.5rem;
   }
 
-  .post-featured-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    margin: 0 0 48px;
-    border-radius: 12px;
+
+  /* =========================================================
+     ARCHIVE
+     ========================================================= */
+
+  .archive {
+    max-width: 1100px;
+    margin: 0 auto;
   }
 
+  .archive-header {
+    margin-bottom: 56px;
+    max-width: 760px;
+  }
+
+  .archive-eyebrow {
+    margin: 0 0 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.55;
+  }
+
+  .archive-header h1 {
+    margin: 0 0 14px;
+    font-size: clamp(3rem, 7vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.045em;
+  }
+
+  .archive-count {
+    margin: 0;
+    font-size: 0.95rem;
+    opacity: 0.55;
+  }
+
+
+  /* =========================================================
+     ARCHIVE GRID
+     ========================================================= */
+
+  .archive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px;
+  }
+
+
+  /* =========================================================
+     ARCHIVE CARD
+     ========================================================= */
+
+  .archive-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .archive-image-link {
+    display: block;
+    overflow: hidden;
+    margin-bottom: 22px;
+    border-radius: 12px;
+    background: #f3f3f3;
+  }
+
+  .archive-image {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  .archive-image-link:hover .archive-image {
+    transform: scale(1.03);
+  }
+
+  .archive-card-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .archive-date {
+    margin: 0 0 10px;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .archive-title {
+    margin: 0 0 12px;
+    font-size: 1.45rem;
+    line-height: 1.2;
+    letter-spacing: -0.025em;
+  }
+
+  .archive-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .archive-title a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .archive-excerpt {
+    font-size: 0.95rem;
+    line-height: 1.65;
+    opacity: 0.7;
+  }
+
+  .archive-excerpt :global(p) {
+    margin: 0;
+  }
+
+  .archive-taxonomy {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 18px;
+  }
+
+  .archive-taxonomy a {
+    font-size: 0.72rem;
+    line-height: 1;
+    padding: 6px 9px;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    text-decoration: none;
+    opacity: 0.6;
+  }
+
+  .archive-taxonomy a:hover {
+    opacity: 1;
+  }
+
+
+  /* =========================================================
+     TABLET
+     ========================================================= */
+
+  @media (max-width: 900px) {
+
+    .archive-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 28px;
+    }
+
+  }
+
+
+  /* =========================================================
+     MOBILE
+     ========================================================= */
+
   @media (max-width: 640px) {
+
     .post-page {
-      padding: 48px 20px;
+      padding: 96px 20px 56px;
     }
 
     .post-header {
@@ -272,5 +579,24 @@ const isTag = node.__typename === 'Tag';
     .post-content {
       font-size: 1rem;
     }
+
+    .archive-header {
+      margin-bottom: 40px;
+    }
+
+    .archive-header h1 {
+      font-size: clamp(2.6rem, 12vw, 4rem);
+    }
+
+    .archive-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .archive-title {
+      font-size: 1.35rem;
+    }
+
   }
+
 </style>
