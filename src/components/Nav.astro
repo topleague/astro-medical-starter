@@ -3,27 +3,34 @@ import { getNavigationMenu } from '../lib/wordpress.js';
 
 const navLinks = await getNavigationMenu('header-navigation');
 ---
+
 <!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
 
 <nav class="nav" id="nav">
+
   <a href="/" class="nav-logo">MEDCLINIC</a>
 
   <button
     class="nav-menu-btn"
     id="menuBtn"
-    aria-label="Abrir menú"
+    aria-label="Open menu"
     aria-expanded="false"
   >
     <span class="lines">
       <span></span>
       <span></span>
     </span>
+
     <span class="menu-label">Menu</span>
   </button>
 
   <div class="nav-icons">
-    <!-- Buscar -->
-    <button class="nav-icon-btn" aria-label="Buscar">
+
+    <!-- Search -->
+    <button
+      class="nav-icon-btn"
+      aria-label="Search"
+    >
       <svg
         width="16"
         height="16"
@@ -45,70 +52,136 @@ const navLinks = await getNavigationMenu('header-navigation');
     >
       Reservar cita
     </a>
+
   </div>
 </nav>
 
+
 <!-- Mobile Drawer -->
+
 <div class="nav-drawer" id="navDrawer">
+
   {navLinks.map((link) => (
-    <a href={link.url} class="drawer-link">
+    <a
+      href={link.url}
+      class="drawer-link"
+    >
       {link.label}
     </a>
   ))}
 
-  <a href="#contact" class="btn-accent">Reservar cita</a>
+  <a
+    href="#contact"
+    class="btn-accent"
+  >
+    Reservar cita
+  </a>
+
 </div>
 
+
 <script>
-  const nav = document.getElementById('nav') as HTMLElement;
-  const menuBtn = document.getElementById('menuBtn') as HTMLButtonElement;
-  const drawer = document.getElementById('navDrawer') as HTMLElement;
-  const drawerLinks = drawer.querySelectorAll('.drawer-link');
+  function initNavigation() {
+    const nav = document.getElementById('nav') as HTMLElement | null;
+    const menuBtn = document.getElementById('menuBtn') as HTMLButtonElement | null;
+    const drawer = document.getElementById('navDrawer') as HTMLElement | null;
 
-  // Scroll shadow
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  });
+    if (!nav || !menuBtn || !drawer) {
+      console.error('Navigation elements not found.');
+      return;
+    }
 
-  // Toggle drawer
-  menuBtn.addEventListener('click', () => {
-    const open = drawer.classList.toggle('open');
+    const drawerLinks = drawer.querySelectorAll('.drawer-link');
 
-    menuBtn.setAttribute('aria-expanded', String(open));
-  });
+    /* Scroll shadow */
 
-  // Close on link click
-  drawerLinks.forEach((link) => {
-    link.addEventListener('click', () => {
-      drawer.classList.remove('open');
-      menuBtn.setAttribute('aria-expanded', 'false');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle(
+        'scrolled',
+        window.scrollY > 40
+      );
     });
-  });
+
+
+    /* Toggle drawer */
+
+    const toggleDrawer = () => {
+      const open = drawer.classList.toggle('open');
+
+      menuBtn.setAttribute(
+        'aria-expanded',
+        String(open)
+      );
+    };
+
+
+    menuBtn.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      toggleDrawer();
+    });
+
+
+    /* Close drawer after clicking a link */
+
+    drawerLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        drawer.classList.remove('open');
+
+        menuBtn.setAttribute(
+          'aria-expanded',
+          'false'
+        );
+      });
+    });
+  }
+
+
+  if (document.readyState === 'loading') {
+    document.addEventListener(
+      'DOMContentLoaded',
+      initNavigation,
+      { once: true }
+    );
+  } else {
+    initNavigation();
+  }
 </script>
 
+
 <style>
-/* ── Nav mobile ────────────────────────────────────────── */
+
+/* ─────────────────────────────────────────────
+   Mobile navigation
+   ───────────────────────────────────────────── */
 
 @media (max-width: 768px) {
-  /* Hide "Menu" text */
+
   .menu-label {
     display: none;
   }
 
-  /* Hide search button */
   .nav-icon-btn {
     display: none;
   }
 
-  /* Reserve button */
   .nav-icons .btn-accent {
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     text-align: center;
+
     padding: 0.5rem 0.85rem;
+
     font-size: 0.72rem;
+
     line-height: 1.2;
+
   }
+
 }
+
 </style>
