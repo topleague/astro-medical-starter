@@ -45,7 +45,7 @@ export async function getAllPostUris() {
 }
 
 
-/* Get one complete post by its URI */
+/* Get one complete post/page/category/tag by URI */
 
 export async function getNodeByURI(uri) {
   const data = await wpFetch(
@@ -104,6 +104,20 @@ export async function getNodeByURI(uri) {
                 date
                 uri
                 excerpt
+
+                featuredImage {
+                  node {
+                    sourceUrl
+                    altText
+                  }
+                }
+
+                categories {
+                  nodes {
+                    name
+                    uri
+                  }
+                }
               }
             }
           }
@@ -120,6 +134,20 @@ export async function getNodeByURI(uri) {
                 date
                 uri
                 excerpt
+
+                featuredImage {
+                  node {
+                    sourceUrl
+                    altText
+                  }
+                }
+
+                categories {
+                  nodes {
+                    name
+                    uri
+                  }
+                }
               }
             }
           }
@@ -202,6 +230,13 @@ export async function getPosts() {
               uri
             }
           }
+
+          tags {
+            nodes {
+              name
+              uri
+            }
+          }
         }
       }
     }
@@ -230,12 +265,52 @@ export async function getNavigationMenu(slug) {
 
   const html = menus[0].content?.rendered || '';
 
-  const matches = [...html.matchAll(
-    /<a[^>]+href="([^"]+)"[^>]*>.*?<span[^>]*>(.*?)<\/span>/gs
-  )];
+  const matches = [
+    ...html.matchAll(
+      /<a[^>]+href="([^"]+)"[^>]*>.*?<span[^>]*>(.*?)<\/span>/gs
+    )
+  ];
 
-  return matches.map((match) => ({
-    label: match[2].replace(/<[^>]+>/g, '').trim(),
-    url: match[1],
-  }));
+  return matches.map((match) => {
+    const originalUrl = match[1];
+
+    let url = originalUrl;
+
+    /*
+     * Convert WordPress internal URLs to Astro-relative URLs.
+     *
+     * Example:
+     * https://susanta.com/category/seo/
+     * becomes:
+     * /category/seo/
+     *
+     * External URLs remain unchanged.
+     */
+    try {
+      const parsedUrl = new URL(originalUrl);
+
+      if (parsedUrl.hostname === 'susanta.com') {
+        url = parsedUrl.pathname;
+
+        if (parsedUrl.search) {
+          url += parsedUrl.search;
+        }
+
+        if (parsedUrl.hash) {
+          url += parsedUrl.hash;
+        }
+
+        if (!url.endsWith('/')) {
+          url += '/';
+        }
+      }
+    } catch {
+      // Keep the original URL if it isn't a valid absolute URL.
+    }
+
+    return {
+      label: match[2].replace(/<[^>]+>/g, '').trim(),
+      url,
+    };
+  });
 }
