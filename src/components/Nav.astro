@@ -1,18 +1,19 @@
 ---
-const navLinks = [
-  { href: '#services',    label: 'Servicios' },
-  { href: '#about',       label: 'Sobre nosotros' },
-  { href: '#team',        label: 'Equipo' },
-  { href: '#contact',     label: 'Contacto' },
-];
+import { getNavigationMenu } from '../lib/wordpress.js';
+
+const navLinks = await getNavigationMenu('header-navigation');
 ---
 <!-- @daruma-template: Astro Medical Starter · https://darumaproducciones.es -->
-
 
 <nav class="nav" id="nav">
   <a href="/" class="nav-logo">MEDCLINIC</a>
 
-  <button class="nav-menu-btn" id="menuBtn" aria-label="Abrir menú">
+  <button
+    class="nav-menu-btn"
+    id="menuBtn"
+    aria-label="Abrir menú"
+    aria-expanded="false"
+  >
     <span class="lines">
       <span></span>
       <span></span>
@@ -23,12 +24,25 @@ const navLinks = [
   <div class="nav-icons">
     <!-- Buscar -->
     <button class="nav-icon-btn" aria-label="Buscar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <path d="m21 21-4.35-4.35" />
       </svg>
     </button>
-    <!-- Sound / CTA -->
-    <a href="#contact" class="btn-accent" style="padding: 0.5rem 1.1rem; font-size:0.75rem;">
+
+    <!-- CTA -->
+    <a
+      href="#contact"
+      class="btn-accent"
+      style="padding: 0.5rem 1.1rem; font-size:0.75rem;"
+    >
       Reservar cita
     </a>
   </div>
@@ -36,14 +50,19 @@ const navLinks = [
 
 <!-- Mobile Drawer -->
 <div class="nav-drawer" id="navDrawer">
-  {navLinks.map(l => <a href={l.href} class="drawer-link">{l.label}</a>)}
+  {navLinks.map((link) => (
+    <a href={link.url} class="drawer-link">
+      {link.label}
+    </a>
+  ))}
+
   <a href="#contact" class="btn-accent">Reservar cita</a>
 </div>
 
 <script>
-  const nav      = document.getElementById('nav') as HTMLElement;
-  const menuBtn  = document.getElementById('menuBtn') as HTMLButtonElement;
-  const drawer   = document.getElementById('navDrawer') as HTMLElement;
+  const nav = document.getElementById('nav') as HTMLElement;
+  const menuBtn = document.getElementById('menuBtn') as HTMLButtonElement;
+  const drawer = document.getElementById('navDrawer') as HTMLElement;
   const drawerLinks = drawer.querySelectorAll('.drawer-link');
 
   // Scroll shadow
@@ -54,25 +73,34 @@ const navLinks = [
   // Toggle drawer
   menuBtn.addEventListener('click', () => {
     const open = drawer.classList.toggle('open');
+
     menuBtn.setAttribute('aria-expanded', String(open));
   });
 
   // Close on link click
-  drawerLinks.forEach(link => {
-    link.addEventListener('click', () => drawer.classList.remove('open'));
+  drawerLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+    });
   });
 </script>
 
 <style>
 /* ── Nav mobile ────────────────────────────────────────── */
+
 @media (max-width: 768px) {
-  /* Ocultar texto "Menu" */
-  .menu-label { display: none; }
+  /* Hide "Menu" text */
+  .menu-label {
+    display: none;
+  }
 
-  /* Ocultar el botón de búsqueda */
-  .nav-icon-btn { display: none; }
+  /* Hide search button */
+  .nav-icon-btn {
+    display: none;
+  }
 
-  /* Botón reservar: texto centrado, tamaño adecuado */
+  /* Reserve button */
   .nav-icons .btn-accent {
     display: flex;
     align-items: center;
@@ -84,4 +112,3 @@ const navLinks = [
   }
 }
 </style>
-

@@ -209,3 +209,33 @@ export async function getPosts() {
 
   return data.posts.nodes;
 }
+
+
+/* Get a WordPress navigation menu by its slug */
+
+export async function getNavigationMenu(slug) {
+  const response = await fetch(
+    `https://susanta.com/wp-json/wp/v2/navigation?slug=${slug}`
+  );
+
+  if (!response.ok) {
+    throw new Error(`WordPress navigation API error: ${response.status}`);
+  }
+
+  const menus = await response.json();
+
+  if (!menus.length) {
+    return [];
+  }
+
+  const html = menus[0].content?.rendered || '';
+
+  const matches = [...html.matchAll(
+    /<a[^>]+href="([^"]+)"[^>]*>.*?<span[^>]*>(.*?)<\/span>/gs
+  )];
+
+  return matches.map((match) => ({
+    label: match[2].replace(/<[^>]+>/g, '').trim(),
+    url: match[1],
+  }));
+}
