@@ -1,21 +1,30 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getPosts } from '../lib/wordpress.js';
+import {
+  getAllPostUris,
+  getPostByURI
+} from '../lib/wordpress.js';
 
 export async function getStaticPaths() {
-  const posts = await getPosts();
+  const uris = await getAllPostUris();
 
-  return posts.map((post) => ({
+  return uris.map((uri) => ({
     params: {
-      uri: post.uri.replace(/^\/|\/$/g, ''),
+      uri: uri.replace(/^\/|\/$/g, ''),
     },
     props: {
-      post,
+      uri,
     },
   }));
 }
 
-const { post } = Astro.props;
+const { uri } = Astro.props;
+
+const post = await getPostByURI(uri);
+
+if (!post) {
+  return Astro.redirect('/404');
+}
 ---
 
 <BaseLayout

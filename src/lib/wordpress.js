@@ -1,38 +1,14 @@
 const WORDPRESS_API_URL = 'https://susanta.com/graphql';
 
-export async function getPosts() {
+async function wpFetch(query, variables = {}) {
   const response = await fetch(WORDPRESS_API_URL, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      query: `
-        {
-          posts(first: 10) {
-            nodes {
-              id
-              title
-              uri
-              date
-              excerpt
-              content
-              featuredImage {
-                node {
-                  sourceUrl
-                  altText
-                }
-              }
-              categories {
-                nodes {
-                  name
-                  uri
-                }
-              }
-            }
-          }
-        }
-      `
+      query,
+      variables
     })
   });
 
@@ -40,53 +16,107 @@ export async function getPosts() {
     throw new Error(`WordPress API error: ${response.status}`);
   }
 
-  const { data } = await response.json();
+  const result = await response.json();
 
-  return data.posts.nodes;
+  if (result.errors) {
+    throw new Error(result.errors[0].message);
+  }
+
+  return result.data;
 }
 
-export async function getPostById(id) {
-    const response = await fetch(WORDPRESS_API_URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        query: `
-          query GetPost($id: ID!) {
-            post(id: $id, idType: ID) {
-              id
-              title
-              uri
-              date
-              excerpt
-              content
-              featuredImage {
-                node {
-                  sourceUrl
-                  altText
-                }
+
+/* Get the URLs of all posts */
+
+export async function getAllPostUris() {
+  const data = await wpFetch(`
+    {
+      posts(first: 100) {
+        nodes {
+          uri
+        }
+      }
+    }
+  `);
+
+  return data.posts.nodes
+    .filter((post) => post.uri)
+    .map((post) => post.uri);
+}
+
+
+/* Get one complete post by its URI */
+
+export async function getPostByURI(uri) {
+  const data = await wpFetch(
+    `
+      query GetPostByURI($uri: String!) {
+        nodeByUri(uri: $uri) {
+          __typename
+
+          ... on Post {
+            id
+            title
+            date
+            uri
+            excerpt
+            content
+
+            featuredImage {
+              node {
+                sourceUrl
+                altText
               }
-              categories {
-                nodes {
-                  name
-                  uri
-                }
+            }
+
+            categories {
+              nodes {
+                name
+                uri
               }
             }
           }
-        `,
-        variables: {
-          id
         }
-      })
-    });
-  
-    if (!response.ok) {
-      throw new Error(`WordPress API error: ${response.status}`);
+      }
+    `,
+    { uri }
+  );
+
+  return data.nodeByUri;
+}
+
+
+/* Get the latest posts for the homepage */
+
+export async function getPosts() {
+  const data = await wpFetch(`
+    {
+      posts(first: 10) {
+        nodes {
+          id
+          title
+          uri
+          date
+          excerpt
+          content
+
+          featuredImage {
+            node {
+              sourceUrl
+              altText
+            }
+          }
+
+          categories {
+            nodes {
+              name
+              uri
+            }
+          }
+        }
+      }
     }
-  
-    const { data } = await response.json();
-  
-    return data.post;
-  }
+  `);
+
+  return data.posts.nodes;
+}
